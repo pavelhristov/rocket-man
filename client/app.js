@@ -8,7 +8,7 @@ if (!PIXI.utils.isWebGLSupported()) {
 
 PIXI.utils.sayHello(type);
 
-let app = new PIXI.Application({ width: 1024, height: 512, antialias: true });
+let app = new PIXI.Application({ width: 1024, height: 512, antialias: true, backgroundColor: 0x252729 });
 
 document.body.appendChild(app.view);
 
@@ -40,7 +40,8 @@ function setup() {
 
     rocketMan = new PIXI.AnimatedSprite(frames);
     rocketMan.position.set(230, 230);
-    rocketMan.anchor.x = 0.27;
+    //rocketMan.anchor.x = 0.27;
+    rocketMan.pivot.x = 14;
     rocketMan.velocity = 3;
     rocketMan.animationSpeed = 0.25;
     rocketMan.rockets = [];
@@ -49,7 +50,7 @@ function setup() {
     line = new PIXI.Graphics();
     line.lineStyle(1, 0x8d1515, 1);
     line.moveTo(0, 1);
-    line.lineTo(0, -300);
+    line.lineTo(0, -500);
     line.x = 230;
     line.y = 230;
     app.stage.addChild(line);
@@ -113,11 +114,11 @@ function play(delta) {
         }
     }
 
-    rocketMan.rockets.forEach((r,index, object) => {
+    rocketMan.rockets.forEach((r, index, object) => {
         let path = new vec2({ x: r.x, y: r.y }, r.target);
         let dir = path.getDirection();
         if (Math.sqrt(dir.x * dir.x + dir.y * dir.y) < r.velocity) {
-            //todo explode
+            explode(r.target);
             r.gotoAndStop(0);
             object.splice(index, 1);
             r.destroy();
@@ -148,5 +149,23 @@ function shoot(target) {
     rocket.play();
     rocketMan.rockets.push(rocket);
     app.stage.addChild(rocket);
+}
+
+function explode(position) {
+    let frames = [];
+    let baseTexture = app.loader.resources[SPRITES.EXPLOSION].texture.baseTexture;
+    let width = baseTexture.width / 40;
+    for (let i = 0; i < 40; i++) {
+        let t = new PIXI.Texture(baseTexture, new PIXI.Rectangle(width * i, 0, width, baseTexture.height));
+        frames.push(t);
+    }
+
+    var explosion = new PIXI.AnimatedSprite(frames);
+    explosion.anchor.set(0.5, 0.5);
+    explosion.position.set(position.x, position.y);
+    explosion.loop = false;
+    explosion.play();
+    explosion.onComplete = function () { this.destroy(); };
+    app.stage.addChild(explosion);
 }
 
