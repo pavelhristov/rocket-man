@@ -19,7 +19,7 @@ const SPRITES = {
     EXPLOSION: 'assets/explosion.png'
 };
 
-let state, rocketMan, line, message, circles;
+let state, rocketMan, line, circles;
 app.loader
     .add([SPRITES.SNIPER, SPRITES.ROCKET, SPRITES.EXPLOSION])
     .on('progress', loadProgressHandler)
@@ -42,34 +42,20 @@ function setup() {
     rocketMan.position.set(230, 230);
     //rocketMan.anchor.x = 0.27;
     rocketMan.pivot.x = 14;
-    rocketMan.velocity = 3;
+    rocketMan.velocity = 5;
     rocketMan.animationSpeed = 0.25;
     rocketMan.rockets = [];
     app.stage.addChild(rocketMan);
 
-    line = new PIXI.Graphics();
-    line.lineStyle(1, 0x8d1515, 1);
-    line.moveTo(0, 1);
-    line.lineTo(0, -500);
+
+    let gradient = createGradient([
+        { position: 0, color: '#8d1515' },
+        { position: 1, color: 'rgba(255, 255, 255, 0)' }
+    ], 800, 1);
+    line = PIXI.Sprite.from(gradient);
     line.x = 230;
     line.y = 230;
     app.stage.addChild(line);
-
-    let style = new PIXI.TextStyle({
-        fontFamily: 'Arial',
-        fontSize: 18,
-        fill: 'white',
-        stroke: '#ff3300',
-        strokeThickness: 4,
-        dropShadow: true,
-        dropShadowColor: '#000000',
-        dropShadowBlur: 4,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6
-    });
-    message = new PIXI.Text('Hello Pixi!', style);
-    message.position.set(5, 5);
-    app.stage.addChild(message);
 
     circles = [];
     app.view.addEventListener('contextmenu', function (ev) {
@@ -115,7 +101,7 @@ function play(delta) {
     let direction = new vec2({ x: rocketMan.x, y: rocketMan.y }, app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage));
     let rotation = vec2.normalY().negate().angleTo(direction);
     rocketMan.rotation = rotation;
-    line.rotation = rotation;
+    line.rotation = rotation - Math.PI / 2;
 
     if (rocketMan.target) {
         let path = new vec2({ x: rocketMan.x, y: rocketMan.y }, rocketMan.target);
@@ -199,3 +185,21 @@ function explode(position) {
     app.stage.addChild(explosion);
 }
 
+function createGradient(colors, width, height) {
+    let canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    let ctx = canvas.getContext('2d');
+    let gradient = ctx.createLinearGradient(0, 0, width, 0);
+    colors.forEach((c) => gradient.addColorStop(c.position, c.color));
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.moveTo(width, height / 2);
+    ctx.lineTo(0, 0);
+    ctx.lineTo(0, height);
+    ctx.fill();
+
+    return PIXI.Texture.from(canvas);
+}
