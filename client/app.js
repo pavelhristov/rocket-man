@@ -43,6 +43,7 @@ function setup() {
     rocketMan.anchor.x = 0.27;
     rocketMan.velocity = 3;
     rocketMan.animationSpeed = 0.25;
+    rocketMan.rockets = [];
     app.stage.addChild(rocketMan);
 
     line = new PIXI.Graphics();
@@ -69,7 +70,6 @@ function setup() {
     message.position.set(5, 5);
     app.stage.addChild(message);
 
-    // todo move to right click
     app.view.addEventListener('contextmenu', function (ev) {
         let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
         rocketMan.target = target;
@@ -77,6 +77,11 @@ function setup() {
 
         ev.preventDefault();
         return false;
+    });
+
+    app.view.addEventListener('click', function (ev) {
+        let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
+        shoot(target);
     });
 
     state = play;
@@ -106,7 +111,42 @@ function play(delta) {
             line.x += dir.x * rocketMan.velocity * delta;
             line.y += dir.y * rocketMan.velocity * delta;
         }
-
     }
+
+    rocketMan.rockets.forEach((r,index, object) => {
+        let path = new vec2({ x: r.x, y: r.y }, r.target);
+        let dir = path.getDirection();
+        if (Math.sqrt(dir.x * dir.x + dir.y * dir.y) < r.velocity) {
+            //todo explode
+            r.gotoAndStop(0);
+            object.splice(index, 1);
+            r.destroy();
+        } else {
+            vec2.negate(vec2.normalize(dir));
+            r.x += dir.x * r.velocity * delta;
+            r.y += dir.y * r.velocity * delta;
+        }
+    });
+}
+
+function shoot(target) {
+    let frames = [];
+    let baseTexture = app.loader.resources[SPRITES.ROCKET].texture.baseTexture;
+    for (let i = 0; i < 4; i++) {
+        let width = baseTexture.width / 4;
+        let t = new PIXI.Texture(baseTexture, new PIXI.Rectangle(width * i, 0, width, baseTexture.height));
+        frames.push(t);
+    }
+
+    let rocket = new PIXI.AnimatedSprite(frames);
+    rocket.x = rocketMan.x;
+    rocket.y = rocketMan.y;
+    rocket.rotation = rocketMan.rotation;
+    rocket.velocity = 10;
+    rocket.animationSpeed = 0.25;
+    rocket.target = target;
+    rocket.play();
+    rocketMan.rockets.push(rocket);
+    app.stage.addChild(rocket);
 }
 
