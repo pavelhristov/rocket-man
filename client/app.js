@@ -19,7 +19,7 @@ const SPRITES = {
     EXPLOSION: 'assets/explosion.png'
 };
 
-let state, rocketMan, line, message;
+let state, rocketMan, line, message, circles;
 app.loader
     .add([SPRITES.SNIPER, SPRITES.ROCKET, SPRITES.EXPLOSION])
     .on('progress', loadProgressHandler)
@@ -71,10 +71,28 @@ function setup() {
     message.position.set(5, 5);
     app.stage.addChild(message);
 
+    circles = [];
     app.view.addEventListener('contextmenu', function (ev) {
         let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
         rocketMan.target = target;
         rocketMan.play();
+
+        let circle = new PIXI.Graphics();
+        circle.lineStyle(0.8, 0xFF0000);
+        circle.drawCircle(0, 0, 3);
+        circle.endFill();
+
+        circle.position.set(target.x, target.y);
+        app.stage.addChild(circle);
+        circles.push(circle);
+
+        // let circleTexture = app.renderer.generateTexture(circle,);
+        // let circleSprite = new PIXI.Sprite(circleTexture);
+        // circleSprite.anchor.set(0.5, 0.5);
+
+        // circleSprite.position.set(target.x, target.y);
+        // app.stage.addChild(circleSprite);
+        // circles.push(circleSprite);
 
         ev.preventDefault();
         return false;
@@ -127,6 +145,18 @@ function play(delta) {
             r.x += dir.x * r.velocity * delta;
             r.y += dir.y * r.velocity * delta;
         }
+    });
+
+    circles.forEach((c, index, object) => {
+        if (c.alpha <= 0) {
+            object.splice(index, 1);
+            c.destroy();
+            return;
+        }
+
+        c.scale.x += 0.3;
+        c.scale.y += 0.3;
+        c.alpha -= 0.05;
     });
 }
 
