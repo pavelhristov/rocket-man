@@ -7,14 +7,16 @@ module.exports = {
     entry: { 'app': './client/app.js' },
     devtool: 'source-map',
     plugins: [
-        new CleanWebpackPlugin(),
+        new CleanWebpackPlugin({
+            cleanStaleWebpackAssets: false // resolve conflict with `CopyWebpackPlugin`
+        }),
         new HtmlWebpackPlugin({
             title: 'rocket man',
             filename: 'index.html',
             template: 'client/index.html'
         }),
         new CopyWebpackPlugin([
-            { from: 'client/assets', to: 'assets' }
+            { from: 'client/assets/', to: 'assets/' }
         ])
     ],
     output: {

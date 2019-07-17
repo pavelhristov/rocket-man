@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import vec2 from './math/vec2.js';
 
 let type = 'WebGL';
 if (!PIXI.utils.isWebGLSupported()) {
@@ -6,3 +7,106 @@ if (!PIXI.utils.isWebGLSupported()) {
 }
 
 PIXI.utils.sayHello(type);
+
+let app = new PIXI.Application({ width: 1024, height: 512, antialias: true });
+
+document.body.appendChild(app.view);
+
+
+const SPRITES = {
+    SNIPER: 'assets/sniper.png',
+    ROCKET: 'assets/rocket.png',
+    EXPLOSION: 'assets/explosion.png'
+};
+
+let state, rocketMan, line, message;
+app.loader
+    .add([SPRITES.SNIPER, SPRITES.ROCKET, SPRITES.EXPLOSION])
+    .on('progress', loadProgressHandler)
+    .load(setup);
+
+function loadProgressHandler(loader, resource) {
+    console.log('loading: ' + resource.url);
+    console.log('progress: ' + loader.progress + '%');
+}
+
+function setup() {
+    let frames = [];
+    for (let i = 0; i < 8; i++) {
+        let width = i === 7 ? 52 : 53;
+        let t = new PIXI.Texture(app.loader.resources[SPRITES.SNIPER].texture.baseTexture, new PIXI.Rectangle(53 * i, 0, width, 63));
+        frames.push(t);
+    }
+
+    rocketMan = new PIXI.AnimatedSprite(frames);
+    rocketMan.position.set(230, 230);
+    rocketMan.anchor.x = 0.27;
+    rocketMan.velocity = 3;
+    rocketMan.animationSpeed = 0.25;
+    app.stage.addChild(rocketMan);
+
+    line = new PIXI.Graphics();
+    line.lineStyle(1, 0x8d1515, 1);
+    line.moveTo(0, 1);
+    line.lineTo(0, -300);
+    line.x = 230;
+    line.y = 230;
+    app.stage.addChild(line);
+
+    let style = new PIXI.TextStyle({
+        fontFamily: 'Arial',
+        fontSize: 18,
+        fill: 'white',
+        stroke: '#ff3300',
+        strokeThickness: 4,
+        dropShadow: true,
+        dropShadowColor: '#000000',
+        dropShadowBlur: 4,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowDistance: 6
+    });
+    message = new PIXI.Text('Hello Pixi!', style);
+    message.position.set(5, 5);
+    app.stage.addChild(message);
+
+    // todo move to right click
+    app.view.addEventListener('contextmenu', function (ev) {
+        let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
+        rocketMan.target = target;
+        rocketMan.play();
+
+        ev.preventDefault();
+        return false;
+    });
+
+    state = play;
+    app.ticker.add(delta => gameLoop(delta));
+}
+
+function gameLoop(delta) {
+    state(delta);
+}
+
+function play(delta) {
+    let direction = new vec2({ x: rocketMan.x, y: rocketMan.y }, app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage));
+    let rotation = vec2.normalY().negate().angleTo(direction);
+    rocketMan.rotation = rotation;
+    line.rotation = rotation;
+
+    if (rocketMan.target) {
+        let path = new vec2({ x: rocketMan.x, y: rocketMan.y }, rocketMan.target);
+        let dir = path.getDirection();
+        if (Math.sqrt(dir.x * dir.x + dir.y * dir.y) < rocketMan.velocity) {
+            rocketMan.gotoAndStop(0);
+            delete rocketMan.target;
+        } else {
+            vec2.negate(vec2.normalize(dir));
+            rocketMan.x += dir.x * rocketMan.velocity * delta;
+            rocketMan.y += dir.y * rocketMan.velocity * delta;
+            line.x += dir.x * rocketMan.velocity * delta;
+            line.y += dir.y * rocketMan.velocity * delta;
+        }
+
+    }
+}
+
