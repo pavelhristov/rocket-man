@@ -15,6 +15,7 @@ export default function (app, reload) {
 
     var explosion = new PIXI.AnimatedSprite(frames);
     explosion.anchor.set(0.5, 0.5);
+    explosion.animationSpeed = 0.3;
     explosion.loop = false;
     explosion.onComplete = function () {
         this.parent.removeChild(this);

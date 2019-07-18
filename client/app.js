@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { SPRITES } from './utils/constants.js';
 import levels from './levels';
+import systems from './systems';
 
 let type = 'WebGL';
 if (!PIXI.utils.isWebGLSupported()) {
@@ -24,15 +25,16 @@ function loadProgressHandler(loader, resource) {
 }
 
 function setup() {
-    let startMenu = levels.startmenu(app, {
+    let startMenu = levels.startmenu(app, systems, {
         onstart: () => {
             app.stage.removeChildren();
-            let game = levels.game(app);
+            let game = levels.game(app, systems);
             state = game.play;
             app.stage.addChild(game.container);
         }
     });
 
+    state = startMenu.play;
     app.stage.addChild(startMenu.container);
     app.ticker.add(delta => gameLoop(delta));
 }

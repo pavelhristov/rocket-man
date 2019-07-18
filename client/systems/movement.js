@@ -1,6 +1,6 @@
 import vec2 from '../math/vec2.js';
 
-export class MovementSystem {
+export default class MovementSystem {
     move(delta, transform, component) {
         if (!component.target) {
             return;

@@ -1,4 +1,4 @@
-export class TransformSystem {
+export default class TransformSystem {
     constructor() {
         this._actions = [];
     }
@@ -31,7 +31,7 @@ export class TransformSystem {
                 }
 
                 if (component[key].hasOwnProperty('max')) {
-                    if (transform[key] <= component[key].max) {
+                    if (transform[key] >= component[key].max) {
                         transform[key] = component[key].max;
                         if (typeof component[key].onmax === 'function') {
                             this._queueAction(component[key].onmax);
