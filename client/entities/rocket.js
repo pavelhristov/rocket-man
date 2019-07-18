@@ -1,11 +1,20 @@
 import rocketPrefab from '../prefabs/rocket.js';
 import explosionPrefab from '../prefabs/explosion.js';
+import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
+import '../utils/typedef.js';
 
+/**
+ * Creates Rocket game entity
+ * 
+ * @param {PIXI.Application} app current running application 
+ * 
+ * @returns {Entity} Entity object
+ */
 export default function (app) {
     let rocket = rocketPrefab(app);
     rocket.entity = {
         displayObject: rocket,
-        type: 'sprite',
+        type: DISPLAY_OBJECT_TYPE.SPRITE,
         components: {
             movement: {
                 speed: 10,

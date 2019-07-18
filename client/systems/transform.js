@@ -1,8 +1,18 @@
+/**
+ * System that handles the animation of transform properties of the an entity.
+ */
 export default class TransformSystem {
     constructor() {
         this._actions = [];
     }
 
+    /**
+     * Animates display object transfrom properties based on transfomr component. Should be called in the game loop.
+     * 
+     * @param {Number} delta delta time 
+     * @param {PIXI.DisplayObject} transform display object 
+     * @param {Object} component transform component 
+     */
     animate(delta, transform, component) {
         this._updateValues(delta, transform, component);
         this._executeActions();

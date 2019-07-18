@@ -1,6 +1,17 @@
 import vec2 from '../math/vec2.js';
+import '../utils/typedef.js';
 
+/**
+ * System that handles the movement of the an entity.
+ */
 export default class MovementSystem {
+    /**
+     * Updates the position of the provided PIXI.DisplayObject based on the provided component. Should be called in the game loop.
+     * 
+     * @param {Number} delta  delta time
+     * @param {PIXI.DisplayObject} transform display object
+     * @param {Object} component movement component
+     */
     move(delta, transform, component) {
         if (!component.target) {
             return;

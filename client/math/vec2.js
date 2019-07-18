@@ -1,3 +1,6 @@
+/**
+ * Helper class for math operations with two dimensional vectors.
+ */
 export default class vec2 {
     constructor(a, b) {
         this.a = a;

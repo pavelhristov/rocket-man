@@ -1,5 +1,16 @@
 import * as PIXI from 'pixi.js';
+import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
+import '../utils/typedef.js';
 
+/**
+ * Creates Raindrop Ripple game entity.
+ * 
+ * Raindrop Ripple scales up and fades away in time, used for user click interaction.
+ * 
+ * @param {PIXI.Application} app current running application 
+ * 
+ * @returns {Entity} Entity object
+ */
 export default function (app) {
     let circle = new PIXI.Graphics();
     circle.lineStyle(0.8, 0xFF0000);
@@ -8,7 +19,7 @@ export default function (app) {
 
     circle.entity = {
         displayObject: circle,
-        type: 'graphics',
+        type: DISPLAY_OBJECT_TYPE.GRAPHICS,
         components: {
             transform: {
                 alpha: {

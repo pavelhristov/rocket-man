@@ -1,7 +1,17 @@
 import * as PIXI from 'pixi.js';
 import menuButtonPrefab from '../prefabs/menu-button.js';
 import menuBackgroundPrefab from '../prefabs/menu-background.js';
+import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
+import '../utils/typedef.js';
 
+/**
+ * Creates Start Menu game entity
+ * 
+ * @param {PIXI.Application} app current running application 
+ * @param {function} onstart callback function will be called when 'Start Game' button click animation
+ * 
+ * @returns {Entity} Entity object
+ */
 export default function (app, onstart) {
     let menu = new PIXI.Container();
     menu.x = app.screen.width / 2;
@@ -17,7 +27,7 @@ export default function (app, onstart) {
 
     menu.entity = {
         displayObject: menu,
-        type: 'container',
+        type: DISPLAY_OBJECT_TYPE.GRAPHICS,
         components: {}
     };
 
