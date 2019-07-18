@@ -2,29 +2,20 @@ import * as PIXI from 'pixi.js';
 import { SPRITES } from './utils/constants.js';
 import levels from './levels';
 import systems from './systems';
-
-let type = 'WebGL';
-if (!PIXI.utils.isWebGLSupported()) {
-    type = 'canvas';
-}
-
-PIXI.utils.sayHello(type);
+import inputManager from './utils/input-manager.js';
 
 let app = new PIXI.Application({ width: 960, height: 950, antialias: true, backgroundColor: 0x252729 });
+app.inputManager = inputManager(app);
+app.inputManager.bindEvent('mouseover', () => app.inputManager.state.mousein = true, true);
+app.inputManager.bindEvent('mouseout', () => app.inputManager.state.mousein = false, true);
 document.body.appendChild(app.view);
 
-let state;
 app.loader
     .add([SPRITES.SNIPER, SPRITES.ROCKET, SPRITES.EXPLOSION])
-    .on('progress', loadProgressHandler)
     .load(setup);
 
-function loadProgressHandler(loader, resource) {
-    console.log('loading: ' + resource.url);
-    console.log('progress: ' + loader.progress + '%');
-}
-
 function setup() {
+    let state;
     let startMenu = levels.startmenu(app, systems, {
         onstart: () => {
             app.stage.removeChildren();
@@ -36,9 +27,5 @@ function setup() {
 
     state = startMenu.play;
     app.stage.addChild(startMenu.container);
-    app.ticker.add(delta => gameLoop(delta));
-}
-
-function gameLoop(delta) {
-    if (state) { state(delta); }
+    app.ticker.add(delta => { if (state) { state(delta); } });
 }
