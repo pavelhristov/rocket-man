@@ -1,4 +1,5 @@
 import vec2 from '../math/vec2.js';
+import mat2 from '../math/mat2.js';
 import '../utils/typedef.js';
 
 /**
@@ -23,7 +24,7 @@ export default class MovementSystem {
             if (component.onstartmoving) { component.onstartmoving(); }
         }
 
-        let path = new vec2({ x: transform.x, y: transform.y }, component.target);
+        let path = new mat2({ x: transform.x, y: transform.y }, component.target);
         let dir = path.getDirection();
         if (Math.sqrt(dir.x * dir.x + dir.y * dir.y) < component.speed) {
             if (component.onstopmoving) { component.onstopmoving(); }

@@ -12,7 +12,7 @@ import '../utils/typedef.js';
  * 
  * @returns {Entity} Entity object
  */
-export default function (app, onstart) {
+export default function (app) {
     let menu = new PIXI.Container();
     menu.x = app.screen.width / 2;
     menu.y = app.screen.height / 2;
@@ -42,7 +42,7 @@ export default function (app, onstart) {
                     menu.entity.components.transform.y = {
                         value: -35,
                         min: 0,
-                        onmin: onstart
+                        onmin: () => app.sceneManager.loadScene('game')
                     };
                 }
             }

@@ -1,4 +1,4 @@
-import vec2 from '../math/vec2.js';
+import mat2 from '../math/mat2.js';
 import '../utils/typedef.js';
 
 /**
@@ -12,8 +12,8 @@ export default class RotationSytem {
      * @param {Point} target target to look at.
      */
     lookAt(transform, target) {
-        let direction = new vec2({ x: transform.x, y: transform.y }, target);
-        let rotation = vec2.normalY().negate().angleTo(direction);
+        let direction = new mat2({ x: transform.x, y: transform.y }, target);
+        let rotation = mat2.normalY().negate().angleTo(direction);
         transform.rotation = rotation;
     }
 }

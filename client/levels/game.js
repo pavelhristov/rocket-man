@@ -37,14 +37,14 @@ export default function (app, systems) {
      * 
      * @param {Numer} delta delta time
      */
-    function play(delta) {
+    function update(delta) {
         systems.movement.move(delta, player.displayObject, player.components.movement);
         if (app.inputManager.state.mousein) {
             let mousePosition = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
             systems.rotation.lookAt(player.displayObject, mousePosition);
         }
 
-        player.children.forEach(container => container.children.filter(c => c.entity).forEach((c) => setTimeout(() => applySystems(c.entity, delta), 0)));
+        player.children.forEach(container => container.children.filter(c => c.entity).forEach((c) => applySystems(c.entity, delta)));
     }
 
     /**
@@ -66,5 +66,5 @@ export default function (app, systems) {
         }
     }
 
-    return { container, play };
+    return { container, update };
 }
