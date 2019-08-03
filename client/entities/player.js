@@ -21,7 +21,7 @@ export default function (app) {
     player.addChild(rocketman);
     player.addChild(aim);
 
-    let bullets = new PIXI.Container();
+    let projectiles = new PIXI.Container();
     let interactionEffects = new PIXI.Container();
 
     function shoot(target) {
@@ -29,7 +29,7 @@ export default function (app) {
         rocket.displayObject.position.set(player.x, player.y);
         rocket.displayObject.rotation = player.rotation;
         rocket.components.movement.target = target;
-        bullets.addChild(rocket.displayObject);
+        projectiles.addChild(rocket.displayObject);
     }
 
     function move(target) {
@@ -54,7 +54,7 @@ export default function (app) {
             move,
             shoot
         },
-        children: [bullets, interactionEffects]
+        children: [projectiles, interactionEffects]
     };
 
     return player.entity;

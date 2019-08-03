@@ -1,5 +1,8 @@
 import * as PIXI from 'pixi.js';
 import playerEntity from '../entities/player.js';
+import monsterEntity from '../entities/monster.js';
+import { randomIntFromInterval } from '../utils/helpers.js';
+import collisionSystem from '../systems/collision.js';
 import '../utils/typedef.js';
 
 /**
@@ -12,6 +15,8 @@ import '../utils/typedef.js';
  */
 export default function (app, systems) {
     let container = new PIXI.Container();
+    let monsters = new PIXI.Container();
+    container.addChild(monsters);
     // create player
     let player = playerEntity(app);
     player.displayObject.position.set(230, 230); //magic start position
@@ -32,6 +37,44 @@ export default function (app, systems) {
         player.methods.shoot(target);
     }, true);
 
+    function spawnMonster1() {
+        let spawnTime = randomIntFromInterval(1, 5);
+        setTimeout(() => {
+            let m = monsterEntity(app);
+            collisionSystem.register(m);
+            monsters.addChild(m.displayObject);
+            spawnMonster1();
+        }, spawnTime * 1000);
+    }
+
+    spawnMonster1();
+
+    function spawnMonster2() {
+        let spawnTime = randomIntFromInterval(2, 5);
+        setTimeout(() => {
+            let m = monsterEntity(app);
+            collisionSystem.register(m);
+            monsters.addChild(m.displayObject);
+            spawnMonster2();
+        }, spawnTime * 1000);
+    }
+
+    spawnMonster2();
+
+    function despawnMonster() {
+        let despawnTime = randomIntFromInterval(5, 15);
+        setTimeout(() => {
+            if (monsters.children.length) {
+                let index = randomIntFromInterval(0, monsters.children.length - 1);
+                collisionSystem.remove(monsters.getChildAt(index).entity);
+                monsters.removeChildAt(index);
+            }
+            despawnMonster();
+        }, despawnTime * 1000);
+    }
+
+    despawnMonster();
+
     /**
      * Level game loop
      * 
@@ -45,6 +88,7 @@ export default function (app, systems) {
         }
 
         player.children.forEach(container => container.children.filter(c => c.entity).forEach((c) => applySystems(c.entity, delta)));
+        monsters.children.filter(c => c.entity).forEach((c) => applySystems(c.entity, delta));
     }
 
     /**

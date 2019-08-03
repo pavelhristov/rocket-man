@@ -11,7 +11,9 @@ app.inputManager.bindEvent('mouseout', () => app.inputManager.state.mousein = fa
 document.body.appendChild(app.view);
 
 app.loader
-    .add([SPRITES.SNIPER, SPRITES.ROCKET, SPRITES.EXPLOSION])
+    .add([SPRITES.SNIPER, SPRITES.ROCKET, SPRITES.EXPLOSION, SPRITES.MONSTERS.BOBI,
+    SPRITES.MONSTERS.DICHEV, SPRITES.MONSTERS.HRISCHO, SPRITES.MONSTERS.NEV,
+    SPRITES.MONSTERS.PLAMEN, SPRITES.MONSTERS.SANIA, SPRITES.MONSTERS.VALERI, SPRITES.SKULL])
     .load(setup);
 
 function setup() {
