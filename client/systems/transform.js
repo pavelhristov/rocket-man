@@ -1,10 +1,8 @@
 /**
  * System that handles the animation of transform properties of the an entity.
  */
-export default class TransformSystem {
-    constructor() {
-        this._actions = [];
-    }
+export default (function () {
+    const _actions = [];
 
     /**
      * Animates display object transfrom properties based on transfomr component. Should be called in the game loop.
@@ -13,12 +11,12 @@ export default class TransformSystem {
      * @param {PIXI.DisplayObject} transform display object 
      * @param {Object} component transform component 
      */
-    animate(delta, transform, component) {
-        this._updateValues(delta, transform, component);
-        this._executeActions();
+    function animate(delta, transform, component) {
+        _updateValues(delta, transform, component);
+        _executeActions();
     }
 
-    _updateValues(delta, transform, component) {
+    function _updateValues(delta, transform, component) {
         if (!transform || !component) {
             return;
         }
@@ -35,7 +33,7 @@ export default class TransformSystem {
                     if (transform[key] <= component[key].min) {
                         transform[key] = component[key].min;
                         if (typeof component[key].onmin === 'function') {
-                            this._queueAction(component[key].onmin);
+                            _queueAction(component[key].onmin);
                         }
                     }
                 }
@@ -44,7 +42,7 @@ export default class TransformSystem {
                     if (transform[key] >= component[key].max) {
                         transform[key] = component[key].max;
                         if (typeof component[key].onmax === 'function') {
-                            this._queueAction(component[key].onmax);
+                            _queueAction(component[key].onmax);
                         }
                     }
                 }
@@ -52,17 +50,21 @@ export default class TransformSystem {
                 continue;
             }
 
-            this._updateValues(delta, transform[key], component[key]);
+            _updateValues(delta, transform[key], component[key]);
         }
     }
 
-    _queueAction(action) {
-        this._actions.push(action);
+    function _queueAction(action) {
+        _actions.push(action);
     }
 
-    _executeActions() {
-        while (this._actions.length > 0) {
-            this._actions.pop()();
+    function _executeActions() {
+        while (_actions.length > 0) {
+            _actions.pop()();
         }
     }
-}
+
+    return {
+        animate
+    };
+})();

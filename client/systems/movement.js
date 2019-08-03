@@ -1,11 +1,12 @@
 import vec2 from '../math/vec2.js';
 import mat2 from '../math/mat2.js';
+import collisionSystem from './collision.js';
 import '../utils/typedef.js';
 
 /**
  * System that handles the movement of the an entity.
  */
-export default class MovementSystem {
+export default (function () {
     /**
      * Updates the position of the provided PIXI.DisplayObject based on the provided component. Should be called in the game loop.
      * 
@@ -13,7 +14,7 @@ export default class MovementSystem {
      * @param {PIXI.DisplayObject} transform display object
      * @param {Object} component movement component
      */
-    move(delta, transform, component) {
+    function move(delta, transform, component) {
         if (!component.target) {
             return;
         }
@@ -34,6 +35,11 @@ export default class MovementSystem {
             vec2.negate(vec2.normalize(dir));
             transform.x += dir.x * component.speed * delta;
             transform.y += dir.y * component.speed * delta;
+            collisionSystem.checkEntity(transform.entity);
         }
     }
-}
+
+    return {
+        move
+    };
+})();

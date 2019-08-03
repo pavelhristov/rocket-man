@@ -4,7 +4,7 @@ const systems = {};
 context.keys().forEach((filename) => {
     let imported = context(filename);
     let name = filename.substring(2);
-    systems[name] = new (imported.default || imported[name])();
+    systems[name] = imported.default || imported[name];
 });
 
 export default systems;
