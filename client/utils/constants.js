@@ -5,7 +5,7 @@ export const SPRITES = {
     MONSTERS: {
         BOBI: 'assets/bobi.png',
         DICHEV: 'assets/dichev.png',
-        HRISCHO: 'assets/hricho.png',
+        HRISCHO: 'assets/hrischo.png',
         NEV: 'assets/nev.png',
         PLAMEN: 'assets/plamen.png',
         SANIA: 'assets/sania.png',

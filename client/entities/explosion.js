@@ -17,6 +17,7 @@ export default function (app) {
         type: DISPLAY_OBJECT_TYPE.SPRITE,
         components: {
             rigidBody: {
+                type: 'circle',
                 onCollision(entity) {
                     if (entity.isMonster) {
                         entity.methods.die();

@@ -23,7 +23,7 @@ export default function (app) {
         monsterType: '',
         isMonster: true,
         alive: true,
-        components: { rigidBody: {} },
+        components: { rigidBody: { type: 'circle' } },
         methods: {
             die() {
                 monster.texture = app.loader.resources[SPRITES.SKULL].texture;
