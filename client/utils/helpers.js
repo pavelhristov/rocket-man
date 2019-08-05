@@ -29,6 +29,24 @@ export function createGradientTexture(colors, width, height) {
     return PIXI.Texture.from(canvas);
 }
 
+/**
+ * Returns random number in the given interval.
+ * 
+ * @param {number} min min
+ * @param {number} max max
+ * @returns {number} random number in the given interval
+ */
+export function randomFromInterval(min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
+/**
+ * Returns random integer number in the given interval.
+ * 
+ * @param {number} min min
+ * @param {number} max max
+ * @returns {number} random integer number in the given interval
+ */
 export function randomIntFromInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(randomFromInterval(min, max));
 }

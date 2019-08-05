@@ -1,8 +1,6 @@
 import * as PIXI from 'pixi.js';
 import playerEntity from '../entities/player.js';
-import monsterEntity from '../entities/monster.js';
-import { randomIntFromInterval } from '../utils/helpers.js';
-import collisionSystem from '../systems/collision.js';
+import MonsterSpawner from '../monster-spawner.js';
 import '../utils/typedef.js';
 
 /**
@@ -37,43 +35,8 @@ export default function (app, systems) {
         player.methods.shoot(target);
     }, true);
 
-    function spawnMonster1() {
-        let spawnTime = randomIntFromInterval(1, 5);
-        setTimeout(() => {
-            let m = monsterEntity(app);
-            collisionSystem.register(m);
-            monsters.addChild(m.displayObject);
-            spawnMonster1();
-        }, spawnTime * 1000);
-    }
-
-    spawnMonster1();
-
-    function spawnMonster2() {
-        let spawnTime = randomIntFromInterval(2, 5);
-        setTimeout(() => {
-            let m = monsterEntity(app);
-            collisionSystem.register(m);
-            monsters.addChild(m.displayObject);
-            spawnMonster2();
-        }, spawnTime * 1000);
-    }
-
-    spawnMonster2();
-
-    function despawnMonster() {
-        let despawnTime = randomIntFromInterval(5, 15);
-        setTimeout(() => {
-            if (monsters.children.length) {
-                let index = randomIntFromInterval(0, monsters.children.length - 1);
-                collisionSystem.remove(monsters.getChildAt(index).entity);
-                monsters.removeChildAt(index);
-            }
-            despawnMonster();
-        }, despawnTime * 1000);
-    }
-
-    despawnMonster();
+    let spawner = new MonsterSpawner(app, monsters);
+    spawner.start();
 
     /**
      * Level game loop
