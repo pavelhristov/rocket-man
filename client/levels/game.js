@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import playerEntity from '../entities/player.js';
+import PlayerEntity from '../entities/player.js';
 import MonsterSpawner from '../monster-spawner.js';
 import '../utils/typedef.js';
 
@@ -16,14 +16,14 @@ export default function (app, systems) {
     let monsters = new PIXI.Container();
     container.addChild(monsters);
     // create player
-    let player = playerEntity(app);
+    let player = new PlayerEntity(app);
     player.displayObject.position.set(230, 230); //magic start position
     container.addChild(player.displayObject, ...player.children);
 
     // register player movement
     app.inputManager.bindEvent('contextmenu', function (ev) {
         let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
-        player.methods.move(target);
+        player.move(target);
 
         ev.preventDefault();
         return false;
@@ -32,7 +32,7 @@ export default function (app, systems) {
     // register player attack
     app.inputManager.bindEvent('click', function (ev) {
         let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
-        player.methods.shoot(target);
+        player.shoot(target);
     }, true);
 
     let spawner = new MonsterSpawner(app, monsters);

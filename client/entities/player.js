@@ -4,6 +4,7 @@ import aimPrefab from '../prefabs/aim.js';
 import playerRocketEntity from './rocket.js';
 import raindropRippleEntity from './raindrop-ripple.js';
 import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
+import Entity from './contracts/entity.js';
 import '../utils/typedef.js';
 
 /**
@@ -13,49 +14,41 @@ import '../utils/typedef.js';
  * 
  * @returns {Entity} Entity object
  */
-export default function (app) {
-    let player = new PIXI.Container();
-    let rocketman = rocketmanPrefab(app);
-    let aim = aimPrefab(app);
-    aim.rotation = - Math.PI / 2;
-    player.addChild(rocketman);
-    player.addChild(aim);
-
-    let projectiles = new PIXI.Container();
-    let interactionEffects = new PIXI.Container();
-
-    function shoot(target) {
-        let rocket = playerRocketEntity(app);
-        rocket.displayObject.position.set(player.x, player.y);
-        rocket.displayObject.rotation = player.rotation;
-        rocket.components.movement.target = target;
-        projectiles.addChild(rocket.displayObject);
-    }
-
-    function move(target) {
-        player.entity.components.movement.target = target;
-        let circle = raindropRippleEntity(app);
-        circle.displayObject.position.set(target.x, target.y);
-        player.addChild(circle.displayObject);
-        interactionEffects.addChild(circle.displayObject);
-    }
-
-    player.entity = {
-        displayObject: player,
-        type: DISPLAY_OBJECT_TYPE.CONTAINER,
-        components: {
+export default class PlayerEntity extends Entity {
+    constructor(app) {
+        let player = new PIXI.Container();
+        let rocketman = rocketmanPrefab(app);
+        let aim = aimPrefab(app);
+        aim.rotation = - Math.PI / 2;
+        player.addChild(rocketman);
+        player.addChild(aim);
+        super(player, DISPLAY_OBJECT_TYPE.CONTAINER, {
             movement: {
                 speed: 5,
                 onstartmoving: () => rocketman.play(),
                 onstopmoving: () => rocketman.gotoAndStop(0)
             }
-        },
-        methods: {
-            move,
-            shoot
-        },
-        children: [projectiles, interactionEffects]
-    };
+        });
 
-    return player.entity;
+        this._app = app;
+        this._projectiles = new PIXI.Container();
+        this._interactionEffects = new PIXI.Container();
+
+        this.children = [this._projectiles, this._interactionEffects]; // TODO: layers
+    }
+
+    shoot(target) {
+        let rocket = new playerRocketEntity(this._app);
+        rocket.displayObject.position.set(this.x, this.y);
+        rocket.displayObject.rotation = this.displayObject.rotation;
+        rocket.components.movement.target = target;
+        this._projectiles.addChild(rocket.displayObject);
+    }
+
+    move(target) {
+        this.components.movement.target = target;
+        let circle = new raindropRippleEntity(this._app);
+        circle.displayObject.position.set(target.x, target.y);
+        this._interactionEffects.addChild(circle.displayObject);
+    }
 }

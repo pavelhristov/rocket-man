@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
+import Entity from './contracts/entity.js';
 import '../utils/typedef.js';
 
 /**
@@ -11,31 +12,20 @@ import '../utils/typedef.js';
  * 
  * @returns {Entity} Entity object
  */
-export default function (app) {
-    let circle = new PIXI.Graphics();
-    circle.lineStyle(0.8, 0xFF0000);
-    circle.drawCircle(0, 0, 3);
-    circle.endFill();
-
-    circle.entity = {
-        displayObject: circle,
-        type: DISPLAY_OBJECT_TYPE.GRAPHICS,
-        components: {
-            transform: {
-                alpha: {
-                    value: -0.04,
-                    min: 0,
-                    onmin: () => {
-                        delete circle.entity.components.transform;
-                        delete circle.entity;
-                        circle.parent.removeChild(circle);
-                        circle.destroy();
-                    }
-                },
-                scale: { x: 0.25, y: 0.25 }
-            }
-        }
-    };
-
-    return circle.entity;
+export default class RainDropRippleEntity extends Entity {
+    constructor(app) {
+        let circle = new PIXI.Graphics();
+        circle.lineStyle(0.8, 0xFF0000);
+        circle.drawCircle(0, 0, 3);
+        circle.endFill();
+        super(circle, DISPLAY_OBJECT_TYPE.GRAPHICS);
+        this.components.transform = {
+            alpha: {
+                value: -0.04,
+                min: 0,
+                onmin: this.destroy.bind(this)
+            },
+            scale: { x: 0.25, y: 0.25 }
+        };
+    }
 }

@@ -1,6 +1,6 @@
 import ATimer from './atimer.js';
 import { randomIntFromInterval } from './utils/helpers.js';
-import monsterEntity from './entities/monster.js';
+import MonsterEntity from './entities/monster.js';
 import collisionSystem from './systems/collision.js';
 
 /**
@@ -32,7 +32,9 @@ export default class MonsterSpawner extends ATimer {
      */
     _scheduleSpawnMonster(min, max, name) {
         this._setTimer(min, max, name, () => {
-            let m = monsterEntity(this._app);
+            let m = new MonsterEntity(this._app);
+            m.x = randomIntFromInterval(0 + m.displayObject.width / 2, this._app.view.width - m.displayObject.width / 2);
+            m.y = randomIntFromInterval(0 + m.displayObject.height / 2, this._app.view.height - m.displayObject.height / 2);
             collisionSystem.register(m);
             this._container.addChild(m.displayObject);
             this._scheduleSpawnMonster(min, max, name);
@@ -50,7 +52,7 @@ export default class MonsterSpawner extends ATimer {
      */
     _scheduleDespawnMonster(min, max, name) {
         this._setTimer(min, max, name, () => {
-            if (this._container.children.length) {
+            if (this._container.children.length) { // TODO: remove another if is not alive
                 let index = randomIntFromInterval(0, this._container.children.length - 1);
                 collisionSystem.remove(this._container.getChildAt(index).entity);
                 this._container.removeChildAt(index);

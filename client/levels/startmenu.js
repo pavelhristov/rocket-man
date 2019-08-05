@@ -1,4 +1,4 @@
-import startMenuEntity from '../entities/startmenu.js';
+import StartMenuEntity from '../entities/startmenu.js';
 import '../utils/typedef.js';
 
 /**
@@ -10,7 +10,7 @@ import '../utils/typedef.js';
  * @returns {Level} start menu game level
  */
 export default function (app, systems) {
-    let menu = startMenuEntity(app);
+    let menu = new StartMenuEntity(app);
 
     function update(delta) {
         if (menu.components.transform) {

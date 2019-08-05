@@ -1,5 +1,7 @@
 import explosionPrefab from '../prefabs/explosion.js';
 import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
+import Entity from './contracts/entity.js';
+import MonsterEntity from './monster.js';
 import '../utils/typedef.js';
 
 /**
@@ -9,23 +11,18 @@ import '../utils/typedef.js';
  * 
  * @returns {Entity} Entity object
  */
-export default function (app) {
-    let explosion = explosionPrefab(app);
-
-    let entity = {
-        displayObject: explosion,
-        type: DISPLAY_OBJECT_TYPE.SPRITE,
-        components: {
+export default class ExpolsionEntity extends Entity {
+    constructor(app) {
+        let explosion = explosionPrefab(app);
+        super(explosion, DISPLAY_OBJECT_TYPE.SPRITE, {
             rigidBody: {
                 type: 'circle',
                 onCollision(entity) {
-                    if (entity.isMonster) {
-                        entity.methods.die();
+                    if (entity instanceof MonsterEntity) {
+                        entity.alive = false;
                     }
                 }
             }
-        }
-    };
-
-    return entity;
+        });
+    }
 }
