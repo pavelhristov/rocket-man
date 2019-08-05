@@ -18,7 +18,7 @@ export default class ExpolsionEntity extends Entity {
             rigidBody: {
                 type: 'circle',
                 onCollision(entity) {
-                    if (entity instanceof MonsterEntity) {
+                    if (entity instanceof MonsterEntity && entity.alive) {
                         entity.alive = false;
                     }
                 }

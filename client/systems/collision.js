@@ -1,3 +1,5 @@
+import { uuidv4 } from '../utils/helpers.js';
+
 export default (function () {
     const colliders = [];
 
@@ -7,7 +9,7 @@ export default (function () {
             return;
         }
 
-        entity.components.rigidBody.id = Math.random();
+        entity.components.rigidBody.id = uuidv4();
         colliders.push(entity);
     }
 
