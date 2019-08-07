@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { SPRITES } from '../utils/constants.js';
+import { SPRITES } from '../utils/assets.js';
 
 let frames;
 export default function (app, reload) {

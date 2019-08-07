@@ -1,6 +1,6 @@
 import monsterPrefab from '../prefabs/monster.js';
 import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
-import { SPRITES } from '../utils/constants.js';
+import { SPRITES } from '../utils/assets.js';
 import collisionSystem from '../systems/collision.js';
 import Entity from './contracts/entity.js';
 import '../utils/typedef.js';

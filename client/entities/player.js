@@ -37,18 +37,26 @@ export default class PlayerEntity extends Entity {
         this.children = [this._projectiles, this._interactionEffects]; // TODO: layers
     }
 
+    /**
+     * @param {vec2} target target
+     */
     shoot(target) {
         let rocket = new playerRocketEntity(this._app);
-        rocket.displayObject.position.set(this.x, this.y);
+        rocket.x = this.x;
+        rocket.y = this.y;
         rocket.displayObject.rotation = this.displayObject.rotation;
         rocket.components.movement.target = target;
         this._projectiles.addChild(rocket.displayObject);
     }
 
+    /**
+     * @param {vec2} target target
+     */
     move(target) {
         this.components.movement.target = target;
         let circle = new raindropRippleEntity(this._app);
-        circle.displayObject.position.set(target.x, target.y);
+        circle.x = target.x;
+        circle.y = target.y;
         this._interactionEffects.addChild(circle.displayObject);
     }
 }
