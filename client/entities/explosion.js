@@ -14,7 +14,7 @@ import '../utils/typedef.js';
 export default class ExpolsionEntity extends Entity {
     constructor(app) {
         let explosion = explosionPrefab(app);
-        super(explosion, DISPLAY_OBJECT_TYPE.SPRITE, {
+        super(app, explosion, DISPLAY_OBJECT_TYPE.SPRITE, {
             rigidBody: {
                 type: 'circle',
                 onCollision(entity) {
@@ -24,5 +24,7 @@ export default class ExpolsionEntity extends Entity {
                 }
             }
         });
+
+        explosion.onComplete = () => this.destroy();
     }
 }

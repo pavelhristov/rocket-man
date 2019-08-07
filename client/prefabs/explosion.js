@@ -17,10 +17,6 @@ export default function (app, reload) {
     explosion.anchor.set(0.5, 0.5);
     explosion.animationSpeed = 0.3;
     explosion.loop = false;
-    explosion.onComplete = function () {
-        this.parent.removeChild(this);
-        this.destroy();
-    };
 
     return explosion;
 }

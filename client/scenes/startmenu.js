@@ -2,21 +2,17 @@ import StartMenuEntity from '../entities/startmenu.js';
 import '../utils/typedef.js';
 
 /**
- * Creates Start Menu game level
+ * Creates Start Menu game scene
  * 
  * @param {PIXI.Application} app current running application.
  * @param {Object} systems game systems.
  * 
- * @returns {Level} start menu game level
+ * @returns {Scene} start menu game scene
  */
-export default function (app, systems) {
+export default function (app) {
     let menu = new StartMenuEntity(app);
 
-    function update(delta) {
-        if (menu.components.transform) {
-            systems.transform.animate(delta, menu.displayObject, menu.components.transform);
-        }
-    }
+    function update(delta) { }
 
     return { container: menu.displayObject, update };
 }

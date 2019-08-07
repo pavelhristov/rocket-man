@@ -1,10 +1,10 @@
 const context = require.context('./', true, /^(?!.*index*$)(\.\/[a-zA-Z]+$)/i);
-const levels = {};
+const scenes = {};
 
 context.keys().forEach((filename) => {
     let imported = context(filename);
     let name = filename.substring(2);
-    levels[name] = imported.default || imported[name];
+    scenes[name] = imported.default || imported[name];
 });
 
-export default levels;
+export default scenes;

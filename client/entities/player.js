@@ -22,15 +22,26 @@ export default class PlayerEntity extends Entity {
         aim.rotation = - Math.PI / 2;
         player.addChild(rocketman);
         player.addChild(aim);
-        super(player, DISPLAY_OBJECT_TYPE.CONTAINER, {
+        super(app, player, DISPLAY_OBJECT_TYPE.CONTAINER, {
             movement: {
                 speed: 5,
                 onstartmoving: () => rocketman.play(),
                 onstopmoving: () => rocketman.gotoAndStop(0)
+            },
+            input: {
+                mouse: {
+                    left: () => {
+                        let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
+                        this.shoot(target);
+                    },
+                    right: () => {
+                        let target = app.renderer.plugins.interaction.mouse.getLocalPosition(app.stage);
+                        this.move(target);
+                    }
+                }
             }
         });
 
-        this._app = app;
         this._projectiles = new PIXI.Container();
         this._interactionEffects = new PIXI.Container();
 

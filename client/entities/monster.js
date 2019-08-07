@@ -1,7 +1,6 @@
 import monsterPrefab from '../prefabs/monster.js';
 import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
 import { SPRITES } from '../utils/assets.js';
-import collisionSystem from '../systems/collision.js';
 import Entity from './contracts/entity.js';
 import '../utils/typedef.js';
 
@@ -20,10 +19,7 @@ export default class MonsterEntity extends Entity {
      */
     constructor(app) {
         let monster = monsterPrefab(app);
-        super(monster, DISPLAY_OBJECT_TYPE.SPRITE, { rigidBody: { type: 'circle' } });
-        this._app = app;
-        this.isMonster = true;
-
+        super(app, monster, DISPLAY_OBJECT_TYPE.SPRITE, { rigidBody: { type: 'circle' } });
         this._alive = true;
     }
 
@@ -38,14 +34,14 @@ export default class MonsterEntity extends Entity {
         this.displayObject.texture = this._app.loader.resources[SPRITES.SKULL].texture;
         this.displayObject.width = 48;
         this.displayObject.height = 48;
-        collisionSystem.remove(this); // TODO: handle in base entity
-        this.components.transform = {
+        this.removeComponent('rigidBody');
+        this.addComponent('transform', {
             alpha: {
                 value: -0.005, // TODO: create timed option
                 min: 0,
-                onmin: this.destroy.bind(this)
+                onmin: () => this.destroy()
             }
-        };
+        });
     }
     get alive() { return this._alive; }
 }

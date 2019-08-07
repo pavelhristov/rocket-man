@@ -18,14 +18,17 @@ export default class RainDropRippleEntity extends Entity {
         circle.lineStyle(0.8, 0xFF0000);
         circle.drawCircle(0, 0, 3);
         circle.endFill();
-        super(circle, DISPLAY_OBJECT_TYPE.GRAPHICS);
-        this.components.transform = {
+        super(app, circle, DISPLAY_OBJECT_TYPE.GRAPHICS);
+        this.addComponent('transform', {
             alpha: {
                 value: -0.04,
                 min: 0,
-                onmin: this.destroy.bind(this)
+                onmin: () => {
+                    this.removeComponent('transform');
+                    this.destroy();
+                }
             },
             scale: { x: 0.25, y: 0.25 }
-        };
+        });
     }
 }

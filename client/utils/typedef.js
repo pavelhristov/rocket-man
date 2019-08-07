@@ -9,9 +9,9 @@
  */
 
 /**
- * @typedef {Object} Level game level object
- * @property {PIXI.Container} container container that holds level's entities to be added to the stage
- * @property {function} play game loop for the level
+ * @typedef {Object} Scene game scene object
+ * @property {PIXI.Container} container container that holds scene's entities to be added to the stage
+ * @property {function} play game loop for the scene
  */
 
 /**

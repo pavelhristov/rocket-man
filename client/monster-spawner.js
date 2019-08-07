@@ -1,7 +1,6 @@
 import ATimer from './atimer.js';
 import { randomIntFromInterval } from './utils/helpers.js';
 import MonsterEntity from './entities/monster.js';
-import collisionSystem from './systems/collision.js';
 
 import SignalArray from './signal-array.js';
 import Monster from './monster.js';
@@ -28,16 +27,13 @@ export default class MonsterSpawner extends ATimer {
             entity.x = monster.x;
             entity.y = monster.y;
             entity.monsterId = monster.id;
-            collisionSystem.register(entity);
             this._container.addChild(entity.displayObject);
         };
 
         this._monsters.onRemove = (monster) => {
             let displayObject = this._container.children.find(d => d.entity && d.entity.monsterId === monster.id);
             if (!displayObject || !displayObject.entity) return;
-
-            collisionSystem.remove(displayObject.entity);
-            this._container.removeChild(displayObject);
+            displayObject.entity.destroy();
         };
     }
 
@@ -52,7 +48,7 @@ export default class MonsterSpawner extends ATimer {
      */
     _scheduleSpawnMonster(min, max, name) {
         this._setTimer(min, max, name, () => {
-            let monster = new Monster('pesho', randomIntFromInterval(0 + 46 / 2, this._app.view.width - 46 / 2),
+            let monster = new Monster('type', randomIntFromInterval(0 + 46 / 2, this._app.view.width - 46 / 2),
                 randomIntFromInterval(0 + 46 / 2, this._app.view.height - 46 / 2)); // hardcoded sprites dimentions
             this._monsters.push(monster);
 
@@ -73,7 +69,7 @@ export default class MonsterSpawner extends ATimer {
         this._setTimer(min, max, name, () => {
             let aliveMonsters = this._monsters.filter(m => m.alive);
             if (aliveMonsters.length) {
-                let index = randomIntFromInterval(0, this._container.children.length - 1);
+                let index = randomIntFromInterval(0, aliveMonsters.length - 1);
                 this._monsters.remove(aliveMonsters[index]);
             }
             

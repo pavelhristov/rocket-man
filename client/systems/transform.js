@@ -1,26 +1,35 @@
+import LoopSystem from './contracts/loop-system';
+
 /**
  * System that handles the animation of transform properties of the an entity.
  */
-export default (function () {
-    const _actions = [];
-
-    /**
-     * Animates display object transfrom properties based on transfomr component. Should be called in the game loop.
-     * 
-     * @param {Number} delta delta time 
-     * @param {PIXI.DisplayObject} transform display object 
-     * @param {Object} component transform component 
-     */
-    function animate(delta, transform, component) {
-        _updateValues(delta, transform, component);
-        _executeActions();
+export default class TransformSystem extends LoopSystem {
+    constructor() {
+        super('transform');
+        this._actions = [];
     }
 
-    function _updateValues(delta, transform, component) {
+    /**
+     * Animates display object transfrom properties based on transfomr component.
+     * 
+     * @param {Number} delta delta time 
+     * @param {Entity} entity entity
+     */
+    animate(delta, entity) {
+        let transform = entity.displayObject;
+        let component = entity.components.transform;
+        let actions = this._updateValues(delta, transform, component);
+        for (let i = 0; i < actions.length; i++) {
+            actions[i]();
+        }
+    }
+
+    _updateValues(delta, transform, component) {
         if (!transform || !component) {
             return;
         }
 
+        let actions = [];
         for (const key in component) {
             if (!isNaN(component[key])) {
                 transform[key] += component[key] * delta;
@@ -33,7 +42,7 @@ export default (function () {
                     if (transform[key] <= component[key].min) {
                         transform[key] = component[key].min;
                         if (typeof component[key].onmin === 'function') {
-                            _queueAction(component[key].onmin);
+                            actions.push(component[key].onmin);
                         }
                     }
                 }
@@ -42,7 +51,7 @@ export default (function () {
                     if (transform[key] >= component[key].max) {
                         transform[key] = component[key].max;
                         if (typeof component[key].onmax === 'function') {
-                            _queueAction(component[key].onmax);
+                            actions.push(component[key].onmax);
                         }
                     }
                 }
@@ -50,21 +59,16 @@ export default (function () {
                 continue;
             }
 
-            _updateValues(delta, transform[key], component[key]);
+            let a = this._updateValues(delta, transform[key], component[key]);
+            if (a && a.length) actions.push(...a);
         }
+
+        return actions;
     }
 
-    function _queueAction(action) {
-        _actions.push(action);
+    process(delta) {
+        this._entities.forEach(e => {
+            this.animate(delta, e);
+        });
     }
-
-    function _executeActions() {
-        while (_actions.length > 0) {
-            _actions.pop()();
-        }
-    }
-
-    return {
-        animate
-    };
-})();
+}

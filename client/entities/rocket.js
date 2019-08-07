@@ -1,7 +1,6 @@
 import rocketPrefab from '../prefabs/rocket.js';
 import ExplosionEntity from './explosion.js';
 import { DISPLAY_OBJECT_TYPE } from '../utils/constants.js';
-import collisionSystem from '../systems/collision.js';
 import Entity from './contracts/entity.js';
 import '../utils/typedef.js';
 
@@ -15,13 +14,12 @@ import '../utils/typedef.js';
 export default class RocketEntity extends Entity {
     constructor(app) {
         let rocket = rocketPrefab(app);
-        super(rocket, DISPLAY_OBJECT_TYPE.SPRITE);
-        this._app = app;
+        super(app, rocket, DISPLAY_OBJECT_TYPE.SPRITE);
 
-        this.components.movement = {
+        this.addComponent('movement', {
             speed: 10,
             onstopmoving: this.explode.bind(this)
-        };
+        });
     }
 
     explode() {
@@ -29,7 +27,7 @@ export default class RocketEntity extends Entity {
         explosion.displayObject.position.set(this.x, this.y);
         explosion.displayObject.play();
         this.displayObject.parent.addChild(explosion.displayObject);
-        collisionSystem.checkEntity(explosion);
+        this._app.systems.collision.checkEntity(explosion);
 
         this.destroy();
     }

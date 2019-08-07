@@ -27,14 +27,12 @@ export default class StartMenuEntity extends Entity {
         let btnStartGame = menuButtonPrefab(app, 'Start Game', () => this.startGame());
         menu.addChild(btnStartGame);
 
-        super(menu, DISPLAY_OBJECT_TYPE.GRAPHICS);
-        this._app = app;
-
+        super(app, menu, DISPLAY_OBJECT_TYPE.GRAPHICS);
     }
 
     startGame() {
         let currentY = this.y;
-        this.components.transform = {
+        this.addComponent('transform', {
             y: {
                 value: 5,
                 max: currentY + 50,
@@ -43,10 +41,13 @@ export default class StartMenuEntity extends Entity {
                     this.components.transform.y = {
                         value: -35,
                         min: 0,
-                        onmin: () => this._app.sceneManager.loadScene('game')
+                        onmin: () => {
+                            this.removeComponent('transfrom');
+                            this._app.sceneManager.loadScene('game');
+                        }
                     };
                 }
             }
-        };
+        });
     }
 }
