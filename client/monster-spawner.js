@@ -3,6 +3,9 @@ import { randomIntFromInterval } from './utils/helpers.js';
 import MonsterEntity from './entities/monster.js';
 import collisionSystem from './systems/collision.js';
 
+import SignalArray from './signal-array.js';
+import Monster from './monster.js';
+
 /**
  * @class MonsterSpawner
  * @classdesc handles spawning of mosters.
@@ -19,6 +22,23 @@ export default class MonsterSpawner extends ATimer {
         super();
         this._app = app;
         this._container = container;
+        this._monsters = new SignalArray();
+        this._monsters.onAdd = (monster) => {
+            let entity = new MonsterEntity(this._app);
+            entity.x = monster.x;
+            entity.y = monster.y;
+            entity.monsterId = monster.id;
+            collisionSystem.register(entity);
+            this._container.addChild(entity.displayObject);
+        };
+
+        this._monsters.onRemove = (monster) => {
+            let displayObject = this._container.children.find(d => d.entity && d.entity.monsterId === monster.id);
+            if (!displayObject || !displayObject.entity) return;
+
+            collisionSystem.remove(displayObject.entity);
+            this._container.removeChild(displayObject);
+        };
     }
 
     /**
@@ -32,11 +52,10 @@ export default class MonsterSpawner extends ATimer {
      */
     _scheduleSpawnMonster(min, max, name) {
         this._setTimer(min, max, name, () => {
-            let m = new MonsterEntity(this._app);
-            m.x = randomIntFromInterval(0 + m.displayObject.width / 2, this._app.view.width - m.displayObject.width / 2);
-            m.y = randomIntFromInterval(0 + m.displayObject.height / 2, this._app.view.height - m.displayObject.height / 2);
-            collisionSystem.register(m);
-            this._container.addChild(m.displayObject);
+            let monster = new Monster('pesho', randomIntFromInterval(0 + 46 / 2, this._app.view.width - 46 / 2),
+                randomIntFromInterval(0 + 46 / 2, this._app.view.height - 46 / 2)); // hardcoded sprites dimentions
+            this._monsters.push(monster);
+
             this._scheduleSpawnMonster(min, max, name);
         });
     }
@@ -52,12 +71,12 @@ export default class MonsterSpawner extends ATimer {
      */
     _scheduleDespawnMonster(min, max, name) {
         this._setTimer(min, max, name, () => {
-            if (this._container.children.length) { // TODO: remove another if is not alive
+            let aliveMonsters = this._monsters.filter(m => m.alive);
+            if (aliveMonsters.length) {
                 let index = randomIntFromInterval(0, this._container.children.length - 1);
-                collisionSystem.remove(this._container.getChildAt(index).entity);
-                this._container.removeChildAt(index);
+                this._monsters.remove(aliveMonsters[index]);
             }
-
+            
             this._scheduleDespawnMonster(min, max, name);
         });
     }

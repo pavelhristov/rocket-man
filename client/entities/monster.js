@@ -31,6 +31,7 @@ export default class MonsterEntity extends Entity {
      * @param {boolean} value value
      */
     set alive(value) {
+        if (!this._alive) return; // no resurrections
         this._alive = !!value;
         if (value) return;
 
