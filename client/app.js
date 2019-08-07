@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { SPRITES } from './utils/constants.js';
+import { SPRITES } from './utils/assets.js';
 import inputManager from './utils/input-manager.js';
 import sceneManager from './scene-manager.js';
 
@@ -18,5 +18,13 @@ app.loader
 
 function setup() {
     app.sceneManager.loadScene('startmenu');
-    app.ticker.add(delta => { app.sceneManager.updateScene(delta); });
+
+    // TODO: layers
+    let style = new PIXI.TextStyle({ fill: 0xFFFFFF });
+    let fpsCounter = new PIXI.Text('', style);
+    app.stage.addChild(fpsCounter);
+    app.ticker.add(delta => {
+        app.sceneManager.updateScene(delta);
+        fpsCounter.text = app.ticker.FPS.toFixed(1);
+    });
 }

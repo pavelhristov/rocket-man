@@ -12,8 +12,11 @@ export default function (app) {
                 return;
             }
 
+            if (currentScene) {
+                app.stage.removeChild(currentScene.container);
+            }
+
             currentScene = scene(app, systems);
-            app.stage.removeChildren();
             app.stage.addChild(currentScene.container);
         },
         updateScene(delta) {
