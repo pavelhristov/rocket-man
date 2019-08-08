@@ -1,83 +1,78 @@
-import BaseSystem from './contracts/base-system';
-
 /**
- * System that handles the user input.
+ * Simple abstraction over dom events.
  */
-export default class InputSystem extends BaseSystem {
-    constructor(app) {
-        super('input');
-
-        this._app = app;
-        this.state = { mouseIn: true };
+export default class Input {
+    /**
+     * @param {HTMLCanvasElement} view render element
+     */
+    constructor(view) {
+        this._view = view;
+        this._documentEvents = {};
+        this._canvasEvents = {};
+        this._state = { mousein: true };
     }
 
-    //-----------------------------------------------------------------------
-    // event handlers
+    //----------------------------------------------------------------------
+    // properties
 
-    _keyDownHandler(ev) {
-        this._entities.filter(e => e.components.input[ev.keyCode]).forEach(e => {
-            let key = e.components.input[ev.keyCode];
-            if (key.hold) key.hold(ev);
-            if (key.down && !key.isDown) {
-                key.down(ev);
-                key.isDown = true;
-            }
-        });
-    }
+    get state() { return this._state; }
 
-    _keyUpHandler(ev) {
-        this._entities.filter(e => e.components.input[ev.keyCode]).forEach(e => {
-            let key = e.components.input[ev.keyCode];
-            if (key.up) key.up(ev);
-            if (key.down) key.isDown = false;
-        });
-    }
-
-    _mouseLeftClickHandler(ev) {
-        this._entities.filter(e => e.components.input.mouse.left).forEach(e => {
-            let mouse = e.components.input.mouse;
-            if (mouse.left) mouse.left(ev);
-        });
-    }
-
-    _mouseRightClickHandler(ev) {
-        this._entities.filter(e => e.components.input.mouse.right).forEach(e => {
-            let mouse = e.components.input.mouse;
-            if (mouse.right) mouse.right(ev);
-        });
-
-        ev.preventDefault();
-        return false;
-    }
-
-    _mouseOverHandler(ev) {
-        this.state.mouseIn = true;
-    }
-
-    _mouseOutHandler(ev) {
-        this.state.mouseIn = false;
-    }
-
-    //---------------------------------------------------------------------
+    //----------------------------------------------------------------------
     // methods
 
-    bindEvents() {
-        this._app.view.addEventListener('click', this._mouseLeftClickHandler.bind(this));
-        this._app.view.addEventListener('contextmenu', this._mouseRightClickHandler.bind(this));
-        this._app.view.addEventListener('mouseover', this._mouseOverHandler.bind(this));
-        this._app.view.addEventListener('mouseout', this._mouseOutHandler.bind(this));
-
-        document.addEventListener('keydown', this._keyDownHandler.bind(this));
-        document.addEventListener('keyup', this._keyUpHandler.bind(this));
+    /**
+     * Bind event
+     * 
+     * @param {string} event event name 
+     * @param {function} handler event handler
+     * @param {bool} isCanvas if the event has to be registered on the canvas element instead of the document 
+     */
+    bindEvent(event, handler, isCanvas) {
+        if (isCanvas) {
+            this._canvasEvents[event] ? this._canvasEvents[event].push(handler) : this._canvasEvents[event] = [handler];
+            this._view.addEventListener(event, handler);
+        } else {
+            this._documentEvents[event] ? this._documentEvents[event].push(handler) : this._documentEvents[event] = [handler];
+            document.addEventListener(event, handler);
+        }
     }
 
-    unbindEvents() {
-        this._app.view.removeEventListener('click', this._mouseLeftClickHandler);
-        this._app.view.removeEventListener('contextmenu', this._mouseRightClickHandler);
-        this._app.view.removeEventListener('mouseover', this._mouseOverHandler);
-        this._app.view.removeEventListener('mouseout', this._mouseOutHandler);
+    /**
+     * Unbinds all events from specified type
+     * 
+     * @param {string} event event name
+     * @param {bool} isCanvas to unbind from canvas element instead of the document
+     */
+    unbindEvent(event, isCanvas) {
+        if (isCanvas && this._canvasEvents[event]) {
+            this._canvasEvents[event].forEach(e => this._view.removeEventListener(event, e));
+            delete this._canvasEvents[event];
+        } else if (this._documentEvents[event]) {
+            this._documentEvents[event].forEach(e => document.removeEventListener(event, e));
+            delete this._documentEvents[event];
+        }
+    }
 
-        document.removeEventListener('keydown', this._keyDownHandler);
-        document.removeEventListener('keyup', this._keyUpHandler);
+    /**
+     * Unbinds provided handler from specified type
+     * 
+     * @param {string} event event name
+     * @param {function} handler event handler to unbind
+     * @param {bool} isCanvas to unbind from canvas element instead of the document
+     */
+    unbindHandler(event, handler, isCanvas) {
+        if (isCanvas && this._canvasEvents[event]) {
+            this._view.removeEventListener(event, handler);
+            let index = this._canvasEvents[event].indexOf(handler);
+            if (index > -1) {
+                this._canvasEvents[event].splice(index, 1);
+            }
+        } else if (this._documentEvents[event]) {
+            document.removeEventListener(event, handler);
+            let index = this._documentEvents[event].indexOf(handler);
+            if (index > -1) {
+                this._documentEvents[event].splice(index, 1);
+            }
+        }
     }
 }

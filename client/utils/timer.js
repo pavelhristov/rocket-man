@@ -1,25 +1,12 @@
-import { randomFromInterval } from './utils/helpers.js';
+import { randomFromInterval } from './helpers.js';
 
 /**
- * @abstract ATimer
  * @classdesc allows for usage of timers.
  * @access public
  */
-export default class ATimer {
+export default class Timer {
     constructor() {
-        if (new.target === ATimer) throw new TypeError('Cannot construct abstract class "Timer" instances directly');
-
         this._timers = {};
-    }
-
-    /**
-     * @abstract
-     * has to be implemented by inheriting class.
-     * 
-     * @access public
-     */
-    start() {
-        throw new Error('Not Implemented!');
     }
 
     /**
@@ -59,16 +46,19 @@ export default class ATimer {
     /**
      * Creates a timer that will execute the provided function after random seconds in the provided range.
      * 
-     * @access protected
+     * @access public
      * 
      * @param {number} min minimum delay before execution in seconds
      * @param {number} max maximum delay before execution in seconds
      * @param {string} name name for timer to allow cancelation
      * @param {function} callback callback to execute after elpased time
      */
-    _setTimer(min, max, name, callback) {
+    setTimer(min, max, name, callback) {
         // aleternatively can be done async loops or coroutines
         let delay = randomFromInterval(min, max);
-        this._timers[name] = setTimeout(callback, delay * 1000);
+        this._timers[name] = setTimeout(() => {
+            callback();
+            this.setTimer(min, max, name, callback);
+        }, delay * 1000);
     }
 }

@@ -1,3 +1,8 @@
+/**
+ * Array that signals when item has been added or removed.
+ * @class
+ * @extends Array
+ */
 export default class SignalArray extends Array {
     // -----------------------------------------------------------------------------
     // properties
@@ -64,8 +69,8 @@ export default class SignalArray extends Array {
     // -----------------------------------------------------------------------------
     // methods
 
-    remove(monster) {
-        let index = this.indexOf(monster);
+    remove(item) {
+        let index = this.indexOf(item);
         this.splice(index, 1);
 
         return this.length;

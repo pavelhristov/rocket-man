@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import './typedef.js';
 
 /**
  * Creates a texture based on a provided gradient.

@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: { 'app': './client/app.js' },
+    entry: { 'app': './client/index.js' },
     devtool: 'source-map',
     plugins: [
         new CleanWebpackPlugin({
